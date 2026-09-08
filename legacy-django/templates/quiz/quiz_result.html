@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="quiz-result-page">
+  <h2>{{ quiz.title }} — Result</h2>
+  <p>Your score: {{ score }}%</p>
+  {% if passed %}
+    <p class="success">You passed this quiz. +10 points earned.</p>
+  {% else %}
+    <p class="error">You didn't pass. Required score: {{ quiz.pass_score }}%. Try again.</p>
+    <a href="{% url 'quiz-attempt' quiz_id=quiz.id %}">Retry Quiz</a>
+  {% endif %}
+</div>
+{% endblock %}

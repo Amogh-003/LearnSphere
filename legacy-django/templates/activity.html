@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="activity-page">
+  <h2>Recent Activity</h2>
+  {% for message in room_messages %}
+    <div class="activity-item">
+      <a href="{% url 'user-profile' pk=message.user.id %}">{{ message.user.username }}</a>
+      commented on <a href="{% url 'room' pk=message.room.id %}">{{ message.room.name }}</a>
+      <p>{{ message.body }}</p>
+      <span class="timestamp">{{ message.created }}</span>
+    </div>
+  {% empty %}<p>No activity yet.</p>{% endfor %}
+</div>
+{% endblock %}

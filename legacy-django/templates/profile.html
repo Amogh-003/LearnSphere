@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="profile-page">
+  <img class="avatar" src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}">
+  <h2>{{ profile_user.username }}</h2>
+  <p>{{ profile_user.headline }}</p>
+  <p>{{ profile_user.bio }}</p>
+  <div class="profile-stats">
+    <span>{{ profile_user.points }} points</span>
+    <span>{{ followers_count }} followers</span>
+    <span>{{ following_count }} following</span>
+  </div>
+  {% if request.user.is_authenticated and request.user != profile_user %}
+    <form method="post" action="{% url 'toggle-follow' pk=profile_user.id %}">
+      {% csrf_token %}
+      <button type="submit">{% if is_following %}Unfollow{% else %}Follow{% endif %}</button>
+    </form>
+  {% endif %}
+  {% if request.user == profile_user %}
+    <a href="{% url 'edit-account' %}">Edit Profile</a>
+  {% endif %}
+
+  <h3>Study Rooms Hosted</h3>
+  {% for room in rooms %}
+    <a href="{% url 'room' pk=room.id %}">{{ room.name }}</a>
+  {% empty %}<p>No rooms yet.</p>{% endfor %}
+
+  <h3>Recent Messages</h3>
+  {% for message in room_messages %}
+    <p>{{ message.body|truncatewords:15 }}</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bookmarks-page">
+  <h2>My Bookmarked Rooms</h2>
+  {% for bookmark in bookmarks %}
+    <a href="{% url 'room' pk=bookmark.room.id %}">{{ bookmark.room.name }}</a>
+  {% empty %}<p>You haven't bookmarked any rooms yet.</p>{% endfor %}
+</div>
+{% endblock %}

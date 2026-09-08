@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="room-detail">
+  <h1>{{ room.name }}</h1>
+  <p class="room-topic">Topic: {{ room.topic.name }} | Host: <a href="{% url 'user-profile' pk=room.host.id %}">{{ room.host.username }}</a></p>
+  <p>{{ room.description }}</p>
+
+  <div class="tag-cloud">
+    {% for tag in room.tags.all %}<span class="tag">#{{ tag.name }}</span>{% endfor %}
+  </div>
+
+  <div class="room-actions">
+    {% if request.user.is_authenticated %}
+      <form method="post" action="{% url 'toggle-like' pk=room.id %}"><button type="submit">{% if request.user in room.likes.all %}Unlike{% else %}Like{% endif %} ({{ room.likes.count }})</button></form>
+      <form method="post" action="{% url 'toggle-bookmark' pk=room.id %}"><button type="submit">Bookmark</button></form>
+    {% endif %}
+    {% if request.user == room.host %}
+      <a href="{% url 'update-room' pk=room.id %}">Edit</a>
+      <a href="{% url 'delete-room' pk=room.id %}">Delete</a>
+    {% endif %}
+  </div>
+
+  <h3>Participants ({{ participants.count }})</h3>
+  <div class="participants">
+    {% for user in participants %}
+      <a href="{% url 'user-profile' pk=user.id %}">{{ user.username }}</a>
+    {% endfor %}
+  </div>
+
+  <h3>Discussion</h3>
+  {% if request.user.is_authenticated %}
+    <form method="post" class="message-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Send</button>
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to join the discussion.</p>
+  {% endif %}
+
+  {% for message in room_messages %}
+    <div class="message">
+      <a href="{% url 'user-profile' pk=message.user.id %}">{{ message.user.username }}</a>
+      <span class="timestamp">{{ message.created }}</span>
+      <p>{{ message.body }}</p>
+      {% if request.user == message.user %}
+        <a href="{% url 'delete-message' pk=message.id %}">Delete</a>
+      {% endif %}
+      {% for reply in message.replies.all %}
+        <div class="reply">
+          <a href="{% url 'user-profile' pk=reply.user.id %}">{{ reply.user.username }}</a>
+          <p>{{ reply.body }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

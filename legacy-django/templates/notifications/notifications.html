@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="notifications-page">
+  <h2>Notifications</h2>
+  {% for notification in notifications %}
+    <div class="notification {% if not notification.is_read %}unread{% endif %}">
+      <a href="{% url 'mark-notification-read' pk=notification.id %}">{{ notification.text }}</a>
+      <span class="timestamp">{{ notification.created }}</span>
+    </div>
+  {% empty %}<p>No notifications yet.</p>{% endfor %}
+</div>
+{% endblock %}

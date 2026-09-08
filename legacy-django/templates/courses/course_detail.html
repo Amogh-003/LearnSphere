@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="course-detail-page">
+  <h1>{{ course.title }}</h1>
+  <p>By <a href="{% url 'user-profile' pk=course.instructor.id %}">{{ course.instructor.username }}</a> | {{ course.level }} | ${{ course.price }}</p>
+  <p>{{ course.description }}</p>
+  <p>Rating: {{ course.average_rating }} / 5 | {{ course.enrolled_count }} students enrolled</p>
+
+  {% if request.user.is_authenticated and not is_enrolled %}
+    <form method="post" action="{% url 'enroll-course' slug=course.slug %}">
+      {% csrf_token %}
+      <button type="submit">Enroll Now</button>
+    </form>
+  {% endif %}
+  {% if request.user == course.instructor %}
+    <a href="{% url 'add-lesson' slug=course.slug %}">+ Add Lesson</a>
+  {% endif %}
+
+  <h3>Lessons</h3>
+  <ol>
+    {% for lesson in lessons %}
+      <li>
+        {% if is_enrolled or lesson.is_preview %}
+          <a href="{% url 'lesson-detail' slug=course.slug lesson_id=lesson.id %}">{{ lesson.title }}</a>
+        {% else %}
+          {{ lesson.title }} (locked)
+        {% endif %}
+        — {{ lesson.duration_minutes }} min
+      </li>
+    {% endfor %}
+  </ol>
+
+  <h3>Reviews</h3>
+  {% if request.user.is_authenticated and is_enrolled %}
+    <form method="post">
+      {% csrf_token %}
+      {{ review_form.as_p }}
+      <button type="submit">Submit Review</button>
+    </form>
+  {% endif %}
+  {% for review in reviews %}
+    <div class="review">
+      <strong>{{ review.user.username }}</strong> — {{ review.rating }}/5
+      <p>{{ review.comment }}</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

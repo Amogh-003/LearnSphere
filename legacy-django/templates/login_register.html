@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form-page">
+  {% if page == 'register' %}
+    <h2>Create your LearnSphere account</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+  {% else %}
+    <h2>Login to LearnSphere</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label>Email or Username</label>
+      <input type="text" name="username" required>
+      <label>Password</label>
+      <input type="password" name="password" required>
+      <button type="submit">Login</button>
+    </form>
+    <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+    <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+  {% endif %}
+</div>
+{% endblock %}

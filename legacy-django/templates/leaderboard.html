@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="leaderboard-page">
+  <h2>Leaderboard</h2>
+  <ol>
+    {% for user in top_users %}
+      <li><a href="{% url 'user-profile' pk=user.id %}">{{ user.username }}</a> — {{ user.points }} points</li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

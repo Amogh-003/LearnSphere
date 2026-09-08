@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="lesson-detail-page">
+  <h2>{{ lesson.title }}</h2>
+  <p><a href="{% url 'course-detail' slug=course.slug %}">Back to {{ course.title }}</a></p>
+  {% if lesson.video_url %}
+    <div class="video-embed"><iframe src="{{ lesson.video_url }}" allowfullscreen></iframe></div>
+  {% endif %}
+  <div class="lesson-content">{{ lesson.content|linebreaks }}</div>
+
+  {% if enrollment %}
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit">Mark as Complete</button>
+    </form>
+    <p>Course progress: {{ enrollment.progress_percent }}%</p>
+  {% endif %}
+
+  {% if quiz %}
+    <a href="{% url 'quiz-attempt' quiz_id=quiz.id %}">Take Quiz: {{ quiz.title }}</a>
+  {% endif %}
+</div>
+{% endblock %}

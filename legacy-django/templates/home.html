@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="layout">
+  <aside class="sidebar">
+    <h3>Topics</h3>
+    <ul>
+      <li><a href="{% url 'home' %}">All</a></li>
+      {% for topic in topics %}
+        <li><a href="{% url 'home' %}?q={{ topic.name }}">{{ topic.name }} ({{ topic.room_count }})</a></li>
+      {% endfor %}
+    </ul>
+    <h3>Tags</h3>
+    <div class="tag-cloud">
+      {% for tag in tags %}
+        <a class="tag" href="{% url 'home' %}?tag={{ tag.name }}">#{{ tag.name }}</a>
+      {% endfor %}
+    </div>
+    {% if request.user.is_authenticated %}
+      <a class="btn btn-primary" href="{% url 'create-room' %}">+ Create Study Room</a>
+    {% endif %}
+  </aside>
+
+  <section class="main-feed">
+    <h2>{{ room_count }} study rooms available</h2>
+    {% for room in rooms %}
+      <div class="card">
+        <div class="card-header">
+          <a href="{% url 'room' pk=room.id %}">{{ room.name }}</a>
+          {% if room.is_pinned %}<span class="pin">Pinned</span>{% endif %}
+          {% if room.scheduled_for %}<span class="scheduled">Live {{ room.scheduled_for }}</span>{% endif %}
+        </div>
+        <p>{{ room.description|truncatewords:25 }}</p>
+        <div class="card-meta">
+          <span>Host: {{ room.host.username }}</span>
+          <span>Topic: {{ room.topic.name }}</span>
+          <span>{{ room.participants.count }} participants</span>
+          <span>{{ room.likes.count }} likes</span>
+        </div>
+      </div>
+    {% empty %}
+      <p>No study rooms yet. Be the first to create one.</p>
+    {% endfor %}
+
+    <div class="pagination">
+      {% if rooms.has_previous %}<a href="?page={{ rooms.previous_page_number }}">Previous</a>{% endif %}
+      <span>Page {{ rooms.number }} of {{ rooms.paginator.num_pages }}</span>
+      {% if rooms.has_next %}<a href="?page={{ rooms.next_page_number }}">Next</a>{% endif %}
+    </div>
+  </section>
+
+  <aside class="activity-feed">
+    <h3>Recent Messages</h3>
+    {% for message in room_messages %}
+      <div class="activity-item">
+        <a href="{% url 'user-profile' pk=message.user.id %}">{{ message.user.username }}</a>
+        on <a href="{% url 'room' pk=message.room.id %}">{{ message.room.name }}</a>
+        <p>{{ message.body|truncatewords:15 }}</p>
+      </div>
+    {% endfor %}
+  </aside>
+</div>
+{% endblock %}

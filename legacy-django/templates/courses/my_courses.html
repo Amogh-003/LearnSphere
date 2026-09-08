@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="my-courses-page">
+  <h2>My Learning</h2>
+  {% for enrollment in enrollments %}
+    <div class="course-card">
+      <a href="{% url 'course-detail' slug=enrollment.course.slug %}">{{ enrollment.course.title }}</a>
+      — {{ enrollment.progress_percent }}% complete
+      {% if enrollment.completed %}<span class="badge">Completed</span>{% endif %}
+    </div>
+  {% empty %}<p>You haven't enrolled in any courses yet.</p>{% endfor %}
+
+  <h2>Courses I Teach</h2>
+  {% for course in teaching %}
+    <div class="course-card">
+      <a href="{% url 'course-detail' slug=course.slug %}">{{ course.title }}</a>
+      — {{ course.enrolled_count }} students
+    </div>
+  {% empty %}<p>You haven't created any courses yet.</p>{% endfor %}
+</div>
+{% endblock %}
